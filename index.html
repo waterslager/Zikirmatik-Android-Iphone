@@ -269,7 +269,7 @@
     </div>
 
     <div class="btn-label label-left">GERİ</div>
-    <div class="btn-label label-mid">RESET</div>
+    <div class="btn-label label-mid">TEST123</div>
 
     <button class="icon-btn icon-left" id="btn-undo" title="Geri al">
       <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -431,6 +431,39 @@
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }
+
+  // Uygulama ikondan her acildiginda / on plana her geldiginde
+  // otomatik olarak en guncel halini getirir. Kullaniciya gorunen
+  // hicbir buton veya hareket gerektirmez.
+  (function autoRefresh() {
+    // Telefon "geri-ileri onbellegi" (bfcache) uzerinden eski sayfayi
+    // geri getirdiyse, sayfayi agdan zorla yeniden yukle.
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    });
+
+    // Uygulama arka plandan on plana her geldiginde (ikona tekrar
+    // dokunuldugunda dahil), sunucudaki dosyanin degisip degismedigini
+    // sessizce kontrol eder; degismisse otomatik yeniler.
+    var lastCheck = 0;
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState !== 'visible') return;
+      var now = Date.now();
+      if (now - lastCheck < 3000) return; // ust uste tetiklenmesin
+      lastCheck = now;
+      fetch('./index.html', { cache: 'no-store' })
+        .then(function (res) { return res.text(); })
+        .then(function (fresh) {
+          var current = document.documentElement.outerHTML;
+          if (fresh && fresh.length > 100 && !current.includes(fresh.slice(0, 200))) {
+            window.location.reload();
+          }
+        })
+        .catch(function () {});
+    });
+  })();
 </script>
 
 </body>
