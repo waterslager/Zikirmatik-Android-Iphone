@@ -113,14 +113,10 @@
   }
   .seg-f { top: 1.9px; left: 0; }
   .seg-b { top: 1.9px; right: 0; }
-  .seg-e { top: 19.3px; left: 0; }
-  .seg-c { top: 19.3px; right: 0; }
+  .seg-e { top: 20.3px; left: 0; }
+  .seg-c { top: 20.3px; right: 0; }
 
-  /* "1" rakami sadece sag dikey cubuklari (b,c) kullandigi icin kutu icinde
-     saga yasli goruntu verip komsu rakamlarla dengesiz bosluk olusturuyordu.
-     Bu rakam icin kutuyu daraltip cubuklari kutunun ortasina aliyoruz, ayrica
-     cubuklari tam yukseklige uzatarak diger rakamlarla ayni boyda gorunmesini
-     sagliyoruz. */
+  /* "1" rakami sadece sag dikey cubuklari kullandigindan dar ve ortali gorunmesi icin ozel konumlandi */
   .lcd-digit.digit-one { width: 11px; }
   .lcd-digit.digit-one .seg-b,
   .lcd-digit.digit-one .seg-c {
@@ -129,16 +125,12 @@
   .lcd-digit.digit-one .seg-b { top: 0; }
   .lcd-digit.digit-one .seg-c { top: 20px; }
 
-  /* "4" ust (a) ve alt (d) cubuklari kullanmadigi icin diger rakamlardan
-     kisa gorunuyordu. Ust iki dikey cubugu (f ve b) kutunun tepesine,
-     alt dikey cubugu (c) kutunun dibine kadar uzatarak diger rakamlarla
-     ayni yukseklikte ve simetrik gorunmesini sagliyoruz. */
+  /* "4" ust/alt cubuk kullanmadigindan diger rakamlarla ayni boyda gorunmesi icin cubuklar uzatildi */
   .lcd-digit.digit-four .seg-f,
   .lcd-digit.digit-four .seg-b { top: 0; height: 15.7px; }
   .lcd-digit.digit-four .seg-c { top: 19.3px; height: 16.7px; }
 
-  /* "7" alt (d) cubugu kullanmadigi icin diger rakamlardan kisa
-     gorunuyordu. Sag alt dikey cubugu (c) kutunun dibine kadar uzatiyoruz. */
+  /* "7" alt cubuk kullanmadigindan diger rakamlarla ayni boyda gorunmesi icin uzatildi */
   .lcd-digit.digit-seven .seg-c { top: 19.3px; height: 16.7px; }
 
   /* ---------- IKON BUTONLARI ---------- */
@@ -424,45 +416,27 @@
 
   updateDisplay();
 
+  // "SAYAC" yazisi Times New Roman ile konumlandirildi; font Android'de
+  // sistem fontu degil, bu yuzden ilk karede fallback font ile kayik
+  // gorunup font yuklenince (veya dokununca tetiklenen repaint'te)
+  // duzeliyordu. Fontlar hazir olur olmaz erken bir repaint zorluyoruz.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      const svg = document.querySelector('.count-badge-svg');
+      if (svg) {
+        svg.style.opacity = '0.999';
+        requestAnimationFrame(() => { svg.style.opacity = '1'; });
+      }
+    });
+  }
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }
-
-  // Uygulama ikondan her acildiginda / on plana her geldiginde
-  // otomatik olarak en guncel halini getirir. Kullaniciya gorunen
-  // hicbir buton veya hareket gerektirmez.
-  (function autoRefresh() {
-    // Telefon "geri-ileri onbellegi" (bfcache) uzerinden eski sayfayi
-    // geri getirdiyse, sayfayi agdan zorla yeniden yukle.
-    window.addEventListener('pageshow', function (event) {
-      if (event.persisted) {
-        window.location.reload();
-      }
-    });
-
-    // Uygulama arka plandan on plana her geldiginde (ikona tekrar
-    // dokunuldugunda dahil), sunucudaki dosyanin degisip degismedigini
-    // sessizce kontrol eder; degismisse otomatik yeniler.
-    var lastCheck = 0;
-    document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState !== 'visible') return;
-      var now = Date.now();
-      if (now - lastCheck < 3000) return; // ust uste tetiklenmesin
-      lastCheck = now;
-      fetch('./index.html', { cache: 'no-store' })
-        .then(function (res) { return res.text(); })
-        .then(function (fresh) {
-          var current = document.documentElement.outerHTML;
-          if (fresh && fresh.length > 100 && !current.includes(fresh.slice(0, 200))) {
-            window.location.reload();
-          }
-        })
-        .catch(function () {});
-    });
-  })();
 </script>
 
 </body>
 </html>
+
