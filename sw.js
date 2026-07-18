@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zikirmatik-v1';
+const CACHE_NAME = 'zikirmatik-v2';
 const ASSETS = [
   './',
   './index.html',
