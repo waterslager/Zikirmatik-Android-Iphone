@@ -8,6 +8,7 @@
   "scope": "./",
   "id": "/Zikirmatik-Android-Iphone/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
