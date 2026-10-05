@@ -1,13 +1,24 @@
 {
+  "id": "./index.html",
   "name": "Zikirmatik",
   "short_name": "Zikirmatik",
   "description": "Dijital zikir sayacı",
+  "lang": "tr",
+  "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone"
+  ],
   "orientation": "portrait",
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
+  "categories": [
+    "lifestyle",
+    "utilities"
+  ],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "192.png",

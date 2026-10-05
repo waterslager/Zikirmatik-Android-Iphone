@@ -2,19 +2,32 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Zikirmatik</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0a0a">
 
-<link rel="icon" href="192.png">
+<meta name="color-scheme" content="dark">
+<link rel="icon" type="image/png" sizes="192x192" href="192.png">
 
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Zikirmatik">
-<link rel="apple-touch-icon" href="192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-startup-image" href="splash/1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/1206x2622.png" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="splash/640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -26,6 +39,11 @@
     touch-action: manipulation;
     height: 100%;
     margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   body {
@@ -413,6 +431,24 @@
 
   // Ses dosyasını açılıştan sonra hazırla (ilk 100'lük bip gecikmesin)
   window.addEventListener('load', () => setTimeout(getAudio, 800));
+
+  // iPhone/Android: sesi ilk dokunuşta "kilidini aç" (100'lük bip ilk seferde de çalsın)
+  (function() {
+    let done = false;
+    function unlock() {
+      if (done) return; done = true;
+      try {
+        const a = getAudio(); if (!a) return;
+        a.muted = true;
+        const p = a.play();
+        const back = () => { a.pause(); a.currentTime = 0; a.muted = false; };
+        if (p && p.then) p.then(back, () => { a.muted = false; done = false; }); else back();
+      } catch (e) { done = false; }
+    }
+    document.addEventListener('pointerup', unlock, { passive: true });
+    document.addEventListener('touchend', unlock, { passive: true });
+  })();
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

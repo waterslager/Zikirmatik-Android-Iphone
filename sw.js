@@ -3,7 +3,7 @@
 // Yeni sürüm yayınladığında CACHE_NAME'i değiştirmen gerekmez; içerik arka planda kendini yeniler.
 
 const CACHE_PREFIX = 'zikirmatik-';
-const CACHE_NAME = CACHE_PREFIX + 'v5';
+const CACHE_NAME = CACHE_PREFIX + 'v6';
 const ASSETS = [
   './',
   './index.html',
@@ -11,7 +11,8 @@ const ASSETS = [
   './192.png',
   './512.png',
   './maskable-192.png',
-  './maskable-512.png'
+  './maskable-512.png',
+  './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {
